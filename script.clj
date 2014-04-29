@@ -30,6 +30,13 @@
                                       (range dim))))
                  (range dim))))
 
+(def soln-atom
+     (apply vector
+            (map (fn [_]
+                   (apply vector (map (fn [_] (atom 0))
+                                      (range dim))))
+                 (range dim))))
+
 (defn print-matrix [m] (dotimes [i dim] (print (nth m i) "\n")))
 (defn print-soln-matrix [m] (dotimes [i dim] (print (nth m i) "\n")))
 
@@ -42,15 +49,42 @@
 
 (defn mult-rc [ai bi] (reduce + (map * (nth a ai) (nth b bi))))
 
-(defn get-elem [ai bi] (nth (nth soln ai) bi))
+(defn get-elem [ai bi m] (nth (nth m ai) bi))
 
-(defn mult-matrix [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (send-via custom-pool (get-elem i j) + (mult-rc i j))))))
+(defn mult-matrix [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (send-via custom-pool (get-elem i j soln) + (mult-rc i j))))))
+
+(defn mult-matrix-atom [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (swap! (get-elem i j soln-atom) + (mult-rc i j))))))
+
+(defn mult-matrix-no-c [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (swap! (get-elem i j soln-atom) + (mult-rc i j))))))
 
 ;(defn update [] nil)
 ;(defn update [ai bi] (print ai bi))
 
 (defn show-mult [] (for [i (range dim)] (for [j (range dim)] (print (get-elem i j) (mult-rc i j)))))
 
+;(comment
+(print "mult-matrix-no-c\n")
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(time (mult-matrix-no-c))
+(print "\n")
+;)
+
+(comment
+(print "mult-matrix\n")
 (time (mult-matrix))
 (time (mult-matrix))
 (time (mult-matrix))
@@ -67,6 +101,32 @@
 (time (mult-matrix))
 (time (mult-matrix))
 (time (mult-matrix))
+
+(print "\n")
+)
+
+(comment
+(print "mult-matrix-atom\n")
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+(time (mult-matrix-atom))
+
+(print "\n")
+)
+
 
 ;(print-matrix soln)
 (print "\n")
