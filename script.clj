@@ -4,7 +4,7 @@
 ;; just like clojure.core/send but will use custom-pool instead
 ;; of an internally maintained one
 
-(def dim 256)
+(def dim 2)
 (def r #(rand-int %))
 
 ;(def m (into [] (repeat row (into [] (repeat col (atom []))))))
@@ -32,8 +32,8 @@
 
 (def soln-atom
      (apply vector
-            (map (fn [_]
-                   (apply vector (map (fn [_] (atom 0))
+            (pmap (fn [_]
+                   (apply vector (pmap (fn [_] (atom 0))
                                       (range dim))))
                  (range dim))))
 
@@ -63,7 +63,7 @@
 
 (defn show-mult [] (for [i (range dim)] (for [j (range dim)] (print (get-elem i j) (mult-rc i j)))))
 
-;(comment
+(comment
 (print "mult-matrix-no-c\n")
 (time (mult-matrix-no-c))
 (time (mult-matrix-no-c))
@@ -82,7 +82,7 @@
 (time (mult-matrix-no-c))
 (time (mult-matrix-no-c))
 (print "\n")
-;)
+)
 
 (comment
 (print "mult-matrix\n")
@@ -105,6 +105,12 @@
 
 (print "\n")
 )
+
+
+;(time (pcalls (time mult-matrix-atom) (time mult-matrix-atom) (time mult-matrix-atom)))
+;(time (dotimes [n 100] (time mult-matrix-no-c)))
+
+(time (pcalls (dotimes [n 1000] (time mult-matrix) (print-matrix soln))))
 
 (comment
 (print "mult-matrix-atom\n")
