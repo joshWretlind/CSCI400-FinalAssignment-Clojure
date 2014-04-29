@@ -4,7 +4,7 @@
 ;; just like clojure.core/send but will use custom-pool instead
 ;; of an internally maintained one
 
-(def dim 64)
+(def dim 256)
 (def r #(rand-int %))
 
 ;(def m (into [] (repeat row (into [] (repeat col (atom []))))))
@@ -55,7 +55,8 @@
 
 (defn mult-matrix-atom [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (swap! (get-elem i j soln-atom) + (mult-rc i j))))))
 
-(defn mult-matrix-no-c [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (swap! (get-elem i j soln-atom) + (mult-rc i j))))))
+(defn mult-matrix-no-c [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (mult-rc i j)))))
+
 
 ;(defn update [] nil)
 ;(defn update [ai bi] (print ai bi))
