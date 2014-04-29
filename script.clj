@@ -1,4 +1,10 @@
-(def dim 512)
+(import java.util.concurrent.Executors)
+
+(def custom-pool (Executors/newFixedThreadPool 64))
+;; just like clojure.core/send but will use custom-pool instead
+;; of an internally maintained one
+
+(def dim 64)
 (def r #(rand-int %))
 
 ;(def m (into [] (repeat row (into [] (repeat col (atom []))))))
@@ -38,7 +44,7 @@
 
 (defn get-elem [ai bi] (nth (nth soln ai) bi))
 
-(defn mult-matrix [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (send (get-elem i j) + (mult-rc i j))))))
+(defn mult-matrix [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (send-via custom-pool (get-elem i j) + (mult-rc i j))))))
 
 ;(defn update [] nil)
 ;(defn update [ai bi] (print ai bi))
