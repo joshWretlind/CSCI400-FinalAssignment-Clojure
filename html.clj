@@ -14,7 +14,7 @@
 (defn get-urls [urls]
   (let [agents (doall (map #(agent %) urls))]
     (doseq [agent agents] (send-off agent get-url))
-    (apply await-for 5000 agents)
+    (apply await-for 10000 agents)
     (doall (map #(deref %) agents))))
 
-(prn (get-urls '("http://lethain.com" "http://willarson.com")))
+(prn (get-urls '("http://nytimes.com" "http://theguardian.com")))
