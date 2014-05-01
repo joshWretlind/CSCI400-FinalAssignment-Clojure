@@ -1,4 +1,4 @@
-(def dim 1024)
+(def dim 512)
 
 (defn m []
     (apply vector
@@ -42,7 +42,7 @@
 
 ;(comment
 (print "mult-matrix-atom concurrent\n\n")
-(time (dotimes [i 128]
+(time (dotimes [i 8]
   (let [m (m)]
   (.start (Thread. #(do
                      (mult-matrix-atom m m)
@@ -54,7 +54,7 @@
 
 ;(comment
 (print "mult-matrix-atom NOT concurrent\n\n")
-(time (dotimes [i 16]
+(time (dotimes [i 8]
   (let [m (m)]
    (do
   (mult-matrix-atom m m)
