@@ -40,17 +40,22 @@
     (for [j (range dim)] 
       (print (get-elem i j) (mult-rc i j)))))
 
+(def startTime (System/currentTimeMillis))
 ;(comment
 (print "mult-matrix-atom concurrent\n\n")
 (time (dotimes [i 8]
   (let [m (m)]
   (.start (Thread. #(do
+                     
                      (mult-matrix-atom m m)
                      ;(print (reduce + (map #(deref %) (first soln-atom))) "\n")
                      ;(print-soln-matrix soln-atom)
+                     (def endTime (System/currentTimeMillis))
+                     (print (str "Thread #" i " took " (- endTime startTime) " ms to run \n"))
                      ))))))
 (print "\n")
 ;)
+
 
 ;(comment
 (print "mult-matrix-atom NOT concurrent\n\n")
