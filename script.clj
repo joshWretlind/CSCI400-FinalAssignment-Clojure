@@ -1,5 +1,5 @@
 (def dim 512)
-(def numOfThreads 8)
+(def numOfThreads 7)
 
 (defn m []
     (apply vector
