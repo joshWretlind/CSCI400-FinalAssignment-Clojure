@@ -1,72 +1,65 @@
-(def dim 512)
-(def r #(rand-int %))
+(def dim 1024)
 
-;(def m (into [] (repeat row (into [] (repeat col (atom []))))))
-
-(def a
-     (apply vector
-            (map (fn [_]
-                   (apply vector (map (fn [_] (rand 10))
-                                      (range dim))))
-                 (range dim))))
-
-(def b
+(defn m []
     (apply vector
            (map (fn [_]
-                  (apply vector (map (fn [_] (rand 10))
+                  (apply vector (map (fn [_] (+ 1 (rand 2)))
                                      (range dim))))
                 (range dim))))
 
 (def soln
      (apply vector
             (map (fn [_]
-                   (apply vector (map (fn [_] (agent 0))
+                   (apply vector (map (fn [_] 0)
+                                      (range dim))))
+                 (range dim))))
+
+(def soln-atom
+     (apply vector
+            (pmap (fn [_]
+                   (apply vector (pmap (fn [_] (atom 0))
                                       (range dim))))
                  (range dim))))
 
 (defn print-matrix [m] (dotimes [i dim] (print (nth m i) "\n")))
-(defn print-soln-matrix [m] (dotimes [i dim] (print (nth m i) "\n")))
 
-;(print-matrix a)
+(defn print-soln-matrix [m] (dotimes [i dim] (print (map #(deref %) (nth m i)) "\n")))
+
+(defn mult-rc [a ai b bi] (reduce + (map * (nth a ai) (nth b bi))))
+
+(defn get-elem [ai bi m] (nth (nth m ai) bi))
+
+(defn mult-matrix-atom [a b] 
+  (dotimes [i dim] 
+    (dotimes [j dim]
+      (cond (and i j) 
+        (swap! (get-elem i j soln-atom) + (mult-rc a i b j))))))
+
+(defn show-mult [] 
+  (for [i (range dim)] 
+    (for [j (range dim)] 
+      (print (get-elem i j) (mult-rc i j)))))
+
+;(comment
+(print "mult-matrix-atom concurrent\n\n")
+(time (dotimes [i 128]
+  (let [m (m)]
+  (.start (Thread. #(do
+                     (mult-matrix-atom m m)
+                     ;(print (reduce + (map #(deref %) (first soln-atom))) "\n")
+                     ;(print-soln-matrix soln-atom)
+                     ))))))
 (print "\n")
-;(print-matrix b)
+;)
+
+;(comment
+(print "mult-matrix-atom NOT concurrent\n\n")
+(time (dotimes [i 16]
+  (let [m (m)]
+   (do
+  (mult-matrix-atom m m)
+  ;(print (reduce + (map #(deref %) (first soln-atom))) "\n")
+  ;(print-soln-matrix soln-atom)
+))))
 (print "\n")
-;(print-matrix soln)
-(print "\n")
-
-(defn mult-rc [ai bi] (reduce + (map * (nth a ai) (nth b bi))))
-
-(defn get-elem [ai bi] (nth (nth soln ai) bi))
-
-(defn mult-matrix [] (dotimes [i dim] (dotimes [j dim] (cond (and i j) (send (get-elem i j) + (mult-rc i j))))))
-
-;(defn update [] nil)
-;(defn update [ai bi] (print ai bi))
-
-(defn show-mult [] (for [i (range dim)] (for [j (range dim)] (print (get-elem i j) (mult-rc i j)))))
-
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-(time (mult-matrix))
-
-;(print-matrix soln)
-(print "\n")
-;(send (get-elem 0 0) + (mult-rc 0 0))
-
-
-;(defn columnize [i] (for [n b] (nth n i)))
-
-;(into [] (for [i (range dim)] (into [] (columnize i))))
+;)
